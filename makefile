@@ -20,4 +20,4 @@ debug: build
 	@$(DB) $(TARGET)
 
 run: build
-	@$(TARGET)
+	@$(TARGET) $(ARGS)
