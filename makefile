@@ -1,6 +1,9 @@
 CC := gcc
 DB := gdb
 
+ASM := nasm
+LD := ld
+
 SRC_DIR := src
 TEST_DIR := test
 TEST_OUT_DIR := test_outputs
@@ -36,4 +39,6 @@ test: build
 # first compile all tests programs without careing if it failed or not
 	@mkdir -p $(TEST_OUT_DIR)
 	@rm -f $(TEST_DIR)/*.log
-	@-$(foreach TEST, $(TESTS), $(TARGET) $(TEST) -o $(TEST_OUT_DIR)/$(notdir $(TEST)).s > $(TEST).log)
+	@-$(foreach TEST, $(TESTS), $(TARGET) $(TEST) -o $(TEST_OUT_DIR)/$(notdir $(TEST)).s > $(TEST).log ; )
+	@-$(foreach TEST, $(TESTS), $(ASM) -felf64 $(TEST_OUT_DIR)/$(notdir $(TEST)).s -o $(BUILD_DIR)/$(notdir $(TEST)).o ; )
+	@-$(foreach TEST, $(TESTS), $(LD) $(BUILD_DIR)/$(notdir $(TEST)).o -o $(BUILD_DIR)/$(notdir $(TEST))_bin ; )

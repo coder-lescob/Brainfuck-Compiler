@@ -66,6 +66,10 @@ void emit_instruction(FILE *target_fd, char *code) {
     fprintf(target_fd, "    %s\n", code);
 }
 
+void emit_mov(FILE *target_fd, char *_register, char *value_or_register) {
+    fprintf(target_fd, "    mov %s, %s\n", _register, value_or_register);
+}
+
 void emit_jmp(FILE *target_fd, char *type_jmp, int loop_idx, bool open) {
     fprintf(target_fd, "    %s %s_%d\n", type_jmp, open ? "open" : "close", loop_idx);
 }
@@ -98,8 +102,6 @@ char *fread_all(FILE *fd) {
     char c = 0;
 
     for (size_t i = 0; (c = fgetc(fd)) != EOF; i++) {
-        printf("%s\n", file_content);
-
         if (i >= buf_size) {
             size_t old_buf_size = buf_size;
             buf_size <<= 1; // x2
@@ -192,6 +194,24 @@ void compile_bf(char *input_file, char *output_file) {
                 emit_loop_label(output_fd, close_idx, false);
             } break;
 
+            case '.': {
+                emit_mov(output_fd, "rax", "0x01        ; write syscall");
+                emit_mov(output_fd, "rdi", "0x01        ; stdout");
+                emit_mov(output_fd, "rsi", "tape        ; buf");
+                emit_instruction(output_fd, "add rsi, r8");
+                emit_mov(output_fd, "rdx", "0x01        ; a single char");
+                emit_instruction(output_fd, "syscall");
+            } break;
+
+            case ',': {
+                emit_mov(output_fd, "rax", "0x00        ; read sysacall");
+                emit_mov(output_fd, "rdi", "0x01        ; stdin");
+                emit_mov(output_fd, "rsi", "tape        ; buf");
+                emit_instruction(output_fd, " add rsi, r8");
+                emit_mov(output_fd, "rdx", "0x01        ; a single char");
+                emit_instruction(output_fd, "syscall");
+            } break;
+
             default:
                 break;
         }
@@ -199,8 +219,8 @@ void compile_bf(char *input_file, char *output_file) {
     emit_label(output_fd, "_exit");
 
     emit_comment(output_fd, "use the exit sycall to exit");
-    emit_instruction(output_fd, "mov rax, 0x3c \t \t ; syscall exit (60)");
-    emit_instruction(output_fd, "mov rdi, 0x00 \t \t ; error code 0");
+    emit_instruction(output_fd, "mov rax, 0x3c      ; syscall exit (60)");
+    emit_instruction(output_fd, "mov rdi, 0x00      ; error code 0");
     emit_instruction(output_fd, "syscall");
 
     free(loop_idx_stack);

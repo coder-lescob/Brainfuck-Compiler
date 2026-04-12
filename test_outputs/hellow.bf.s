@@ -16,7 +16,6 @@ _start:
     inc byte [tape + r8]
     inc byte [tape + r8]
     inc byte [tape + r8]
-    inc byte [tape + r8]
 open_0:
     cmp byte [tape + r8], 0
     je close_0
@@ -35,8 +34,14 @@ close_0:
     inc r8
     inc byte [tape + r8]
     inc byte [tape + r8]
+    mov rax, 0x01        ; write syscall
+    mov rdi, 0x01        ; stdout
+    mov rsi, tape        ; buf
+    add rsi, r8
+    mov rdx, 0x01        ; a single char
+    syscall
 _exit:
 ; use the exit sycall to exit
-    mov rax, 0x3c 	 	 ; syscall exit (60)
-    mov rdi, 0x00 	 	 ; error code 0
+    mov rax, 0x3c      ; syscall exit (60)
+    mov rdi, 0x00      ; error code 0
     syscall
