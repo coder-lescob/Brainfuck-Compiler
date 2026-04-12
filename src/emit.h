@@ -30,6 +30,11 @@ void emit_instruction(FILE *target_fd, char *code);
 void emit_mov(FILE *target_fd, char *_register, char *value_or_register);
 
 /**
+ * emits an add instruction
+ */
+void emit_add(FILE *target_fd, char *address_or_reg, int amount);
+
+/**
  * emit a jump instruction to a loop
  * 
  *  `{type_jmp} {open | close}_{loop_idx}` 

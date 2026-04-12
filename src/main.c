@@ -19,7 +19,9 @@ int main(int argc, char **argv) {
     char *args[NUM_ARGS] = { NULL, NULL };
     parse_args(args, argc, argv);
 
+    // compile code to assembly
     compile_bf(args[INPUT_FILE], args[OUTPUT_FILE]);
 
+    // free the arg buf
     free_args_buf(args);
 }

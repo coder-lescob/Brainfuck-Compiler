@@ -23,6 +23,10 @@ void emit_mov(FILE *target_fd, char *_register, char *value_or_register) {
     fprintf(target_fd, "    mov %s, %s\n", _register, value_or_register);
 }
 
+void emit_add(FILE *target_fd, char *address_or_reg, int amount) {
+    fprintf(target_fd, "    add %s, %d\n", address_or_reg, amount);
+}
+
 void emit_jmp(FILE *target_fd, char *type_jmp, int loop_idx, bool open) {
     fprintf(target_fd, "    %s %s_%d\n", type_jmp, open ? "open" : "close", loop_idx);
 }

@@ -14,7 +14,7 @@ _start:
     mov rdx, 0x01        ; a single char
     syscall
 
-    inc byte [tape + r8]
+    add byte [tape + r8], 1
 
     mov rax, 0x01        ; write syscall
     mov rdi, 0x01        ; stdout

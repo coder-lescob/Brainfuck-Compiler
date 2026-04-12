@@ -6,34 +6,18 @@ section .text
 global _start
 _start:
 ; r8 is the tape pointer
-    inc byte [tape + r8]
-    inc byte [tape + r8]
-    inc byte [tape + r8]
-    inc byte [tape + r8]
-    inc byte [tape + r8]
-    inc byte [tape + r8]
-    inc byte [tape + r8]
-    inc byte [tape + r8]
-    inc byte [tape + r8]
-    inc byte [tape + r8]
+    add byte [tape + r8], 10
 open_0:
     cmp byte [tape + r8], 0
     je close_0
-    inc r8
-    inc byte [tape + r8]
-    inc byte [tape + r8]
-    inc byte [tape + r8]
-    inc byte [tape + r8]
-    inc byte [tape + r8]
-    inc byte [tape + r8]
-    inc byte [tape + r8]
-    dec r8
-    dec byte [tape + r8]
+    add r8, 1
+    add byte [tape + r8], 7
+    add r8, -1
+    add byte [tape + r8], -1
     jmp open_0
 close_0:
-    inc r8
-    inc byte [tape + r8]
-    inc byte [tape + r8]
+    add r8, 1
+    add byte [tape + r8], 2
 
     mov rax, 0x01        ; write syscall
     mov rdi, 0x01        ; stdout

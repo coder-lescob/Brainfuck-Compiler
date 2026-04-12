@@ -22,6 +22,13 @@ void compile_bf(char *input_file, char *output_file) {
     
     // count the number loops in the program
     int loops = strcount(prog, '[');
+    int closing_loops = strcount(prog, ']');
+
+    // verify to avoid loop oveflows
+    if (loops != closing_loops) {
+        printf("loop not closed\n");
+        exit(-1);
+    }
 
     // allocates the loop stack to match this depth
     // it cannot overflow because there is only as many '[' in the program than loops pushed
@@ -64,72 +71,90 @@ void compile_bf(char *input_file, char *output_file) {
 }
 
 void emit_bf_instruction(FILE *target_fd, char *prog, int *idx, int *loop_idx_stack, int *loop_stack_ptr, int *loop_idx) {
-    // TODO: add code optimizations
 
     int i = *idx;
     char c = prog[i];
 
-    switch (c)
-        {
-            case '+': {
-                emit_instruction(target_fd, "inc byte [tape + r8]");
-            } break;
+    // optimization variable
+    int number_of = 0;
 
-            case '-': {
-                emit_instruction(target_fd, "dec byte [tape + r8]");
-            } break;
+    switch (c) {
 
-            case '>': {
-                emit_instruction(target_fd, "inc r8");
-            } break;
+        case '-':
+        case '+': {
+            // count the total number of inceaments and decrements
+            number_of = 0;
+            for (;prog[*idx] == '+' || prog[*idx] == '-'; (*idx)++) {
+                int amount = (prog[*idx] == '+')? 1 : -1;
+                number_of += amount;
+            }
+            
+            // put the index back to avoid overshooting and skip characters
+            (*idx)--;
 
-            case '<': {
-                emit_instruction(target_fd, "dec r8");
-            } break;
+            // just emit the add for that total
+            emit_add(target_fd, "byte [tape + r8]", number_of);
+        } break;
 
-            case '[': {
-                emit_loop_label(target_fd, *loop_idx, true);
-                emit_instruction(target_fd, "cmp byte [tape + r8], 0");
-                emit_jmp(target_fd, "je", *loop_idx, false);
+        case '<':
+        case '>': {
+            // count the total number of inceaments and decrements
+            number_of = 0;
+            for (;prog[*idx] == '>' || prog[*idx] == '<'; (*idx)++) {
+                int amount = (prog[*idx] == '>')? 1 : -1;
+                number_of += amount;
+            }
+            
+            // put the index back to avoid overshooting and skip characters
+            (*idx)--;
 
-                // push
-                loop_idx_stack[(*loop_stack_ptr)++] = *loop_idx;
-                (*loop_idx)++;
-            } break;
+            // just emit the add for that total
+            emit_add(target_fd, "r8", number_of);
+        } break;
 
-            case ']': {
-                // pop
-                int close_idx = loop_idx_stack[--(*loop_stack_ptr)];
+        case '[': {
+            emit_loop_label(target_fd, *loop_idx, true);
+            emit_instruction(target_fd, "cmp byte [tape + r8], 0");
+            emit_jmp(target_fd, "je", *loop_idx, false);
 
-                emit_jmp(target_fd, "jmp", close_idx, true);
-                emit_loop_label(target_fd, close_idx, false);
-            } break;
+            // push
+            loop_idx_stack[(*loop_stack_ptr)++] = *loop_idx;
+            (*loop_idx)++;
+        } break;
 
-            case '.': {
-                emit_empty_line(target_fd);
-                emit_mov(target_fd, "rax", "0x01        ; write syscall");
-                emit_mov(target_fd, "rdi", "0x01        ; stdout");
-                emit_mov(target_fd, "rsi", "tape        ; buf");
-                emit_instruction(target_fd, "add rsi, r8");
-                emit_mov(target_fd, "rdx", "0x01        ; a single char");
-                emit_instruction(target_fd, "syscall");
-                emit_empty_line(target_fd);
-            } break;
+        case ']': {
+            // pop
+            int close_idx = loop_idx_stack[--(*loop_stack_ptr)];
 
-            case ',': {
-                emit_empty_line(target_fd);
-                emit_mov(target_fd, "rax", "0x00        ; read sysacall");
-                emit_mov(target_fd, "rdi", "0x01        ; stdin");
-                emit_mov(target_fd, "rsi", "tape        ; buf");
-                emit_instruction(target_fd, "add rsi, r8");
-                emit_mov(target_fd, "rdx", "0x01        ; a single char");
-                emit_instruction(target_fd, "syscall");
-                emit_empty_line(target_fd);
-            } break;
+            emit_jmp(target_fd, "jmp", close_idx, true);
+            emit_loop_label(target_fd, close_idx, false);
+        } break;
 
-            default:
-                break;
-        }
+        case '.': {
+            emit_empty_line(target_fd);
+            emit_mov(target_fd, "rax", "0x01        ; write syscall");
+            emit_mov(target_fd, "rdi", "0x01        ; stdout");
+            emit_mov(target_fd, "rsi", "tape        ; buf");
+            emit_instruction(target_fd, "add rsi, r8");
+            emit_mov(target_fd, "rdx", "0x01        ; a single char");
+            emit_instruction(target_fd, "syscall");
+            emit_empty_line(target_fd);
+        } break;
+
+        case ',': {
+            emit_empty_line(target_fd);
+            emit_mov(target_fd, "rax", "0x00        ; read sysacall");
+            emit_mov(target_fd, "rdi", "0x01        ; stdin");
+            emit_mov(target_fd, "rsi", "tape        ; buf");
+            emit_instruction(target_fd, "add rsi, r8");
+            emit_mov(target_fd, "rdx", "0x01        ; a single char");
+            emit_instruction(target_fd, "syscall");
+            emit_empty_line(target_fd);
+        } break;
+
+        default:
+            break;
+    }
 }
 
 char *fread_all(FILE *fd) { 
