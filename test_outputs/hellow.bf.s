@@ -34,12 +34,14 @@ close_0:
     inc r8
     inc byte [tape + r8]
     inc byte [tape + r8]
+
     mov rax, 0x01        ; write syscall
     mov rdi, 0x01        ; stdout
     mov rsi, tape        ; buf
     add rsi, r8
     mov rdx, 0x01        ; a single char
     syscall
+
 _exit:
 ; use the exit sycall to exit
     mov rax, 0x3c      ; syscall exit (60)
