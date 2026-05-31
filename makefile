@@ -17,11 +17,16 @@ SRCS := $(wildcard $(SRC_DIR)/*.c)
 TESTS := $(wildcard $(TEST_DIR)/*.bf)
 
 TARGET := $(BUILD_DIR)/bf64
+TARGET_RELEASE := $(BUILD_DIR)/bf64-release
 
 .PHONY: build
 build:
 	@mkdir -p $(BUILD_DIR)
 	@$(CC) $(DEBUG_FLAGS) $(SRCS) -o $(TARGET) $(LD_FLAGS)
+
+release:
+	@mkdir -p $(BUILD_DIR)
+	@$(CC) $(SRCS) -o $(TARGET_RELEASE) $(LD_FLAGS)
 
 debug: build
 	@$(DB) $(TARGET)

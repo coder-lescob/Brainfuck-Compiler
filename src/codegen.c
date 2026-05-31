@@ -57,7 +57,7 @@ void compile_bf(char *input_file, char *output_file) {
     emit_label(output_fd, "_exit");
 
     // then place the exit syscall to end the progra without it segfaulting
-    emit_comment(output_fd, "use the exit sycall to exit");
+    emit_comment(output_fd, "use the exit syscall to exit");
     emit_mov(output_fd, "rax", "0x3c      ; syscall exit (60)");
     emit_mov(output_fd, "rdi", "0x00      ; error code 0");
     emit_instruction(output_fd, "syscall");
@@ -143,7 +143,7 @@ void emit_bf_instruction(FILE *target_fd, char *prog, int *idx, int *loop_idx_st
 
         case ',': {
             emit_empty_line(target_fd);
-            emit_mov(target_fd, "rax", "0x00        ; read sysacall");
+            emit_mov(target_fd, "rax", "0x00        ; read syscall");
             emit_mov(target_fd, "rdi", "0x01        ; stdin");
             emit_mov(target_fd, "rsi", "tape        ; buf");
             emit_instruction(target_fd, "add rsi, r8");
