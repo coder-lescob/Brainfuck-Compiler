@@ -157,28 +157,18 @@ void emit_bf_instruction(FILE *target_fd, char *prog, int *idx, int *loop_idx_st
     }
 }
 
-char *fread_all(FILE *fd) { 
-    size_t buf_size = 8; // why 8 byte ? I have no clue, 8 is a beautiful number that it.
-    char *file_content = malloc(buf_size);
-    memset(file_content, 0, buf_size);
+char *fread_all(FILE *fd) {
+    // get the length of the file
+    fseek(fd, 0, SEEK_END);
+    size_t len = ftell(fd);
+    fseek(fd, 0, SEEK_SET);
+
+    // +1 to ensure null terminaison
+    char *file_content = malloc(len + 1);
+    memset(file_content, 0, len + 1);
     
-    char c;
-    for (size_t i = 0; (c = fgetc(fd)) != EOF; i++) {
-        if (i >= buf_size) {
-            // the old buffer is not big enough so we shall allocate a bigger one twice as big
-            // and copy everything in before freeing the old buffer and registering the new as being the buffer
-            size_t old_buf_size = buf_size;
-            buf_size <<= 1; // x2
-
-            char *new_ptr = malloc(buf_size);
-            memset(new_ptr, 0, buf_size);
-            memcpy(new_ptr, file_content, old_buf_size);
-            free(file_content);
-            file_content = new_ptr;
-        }
-
-        file_content[i] = c;
-    }
+    // copy the cotent of the file in file content
+    fgets(file_content, len, fd);
 
     return file_content;
 }
