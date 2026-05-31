@@ -7,7 +7,7 @@ global _start
 _start:
 ; r8 is the tape pointer
 
-    mov rax, 0x00        ; read sysacall
+    mov rax, 0x00        ; read syscall
     mov rdi, 0x01        ; stdin
     mov rsi, tape        ; buf
     add rsi, r8
@@ -24,7 +24,7 @@ _start:
     syscall
 
 _exit:
-; use the exit sycall to exit
+; use the exit syscall to exit
     mov rax, 0x3c      ; syscall exit (60)
     mov rdi, 0x00      ; error code 0
     syscall

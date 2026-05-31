@@ -160,15 +160,13 @@ void emit_bf_instruction(FILE *target_fd, char *prog, int *idx, int *loop_idx_st
 char *fread_all(FILE *fd) {
     // get the length of the file
     fseek(fd, 0, SEEK_END);
-    size_t len = ftell(fd);
-    fseek(fd, 0, SEEK_SET);
+    size_t len = ftell(fd) + 1;
+    rewind(fd);
 
-    // +1 to ensure null terminaison
-    char *file_content = malloc(len + 1);
-    memset(file_content, 0, len + 1);
+    char *file_content = calloc(len, sizeof(char));
     
     // copy the cotent of the file in file content
-    fgets(file_content, len, fd);
+    fread(file_content, len, len, fd);
 
     return file_content;
 }
