@@ -12,12 +12,129 @@ open_0:
     je close_0
     add r8, 1
     add byte [tape + r8], 7
-    add r8, -1
+    add r8, 1
+    add byte [tape + r8], 10
+    add r8, 1
+    add byte [tape + r8], 3
+    add r8, 1
+    add byte [tape + r8], 1
+    add r8, -4
     add byte [tape + r8], -1
     jmp open_0
 close_0:
     add r8, 1
     add byte [tape + r8], 2
+
+    mov rax, 0x01        ; write syscall
+    mov rdi, 0x01        ; stdout
+    mov rsi, tape        ; buf
+    add rsi, r8
+    mov rdx, 0x01        ; a single char
+    syscall
+
+    add r8, 1
+    add byte [tape + r8], 1
+
+    mov rax, 0x01        ; write syscall
+    mov rdi, 0x01        ; stdout
+    mov rsi, tape        ; buf
+    add rsi, r8
+    mov rdx, 0x01        ; a single char
+    syscall
+
+    add byte [tape + r8], 7
+
+    mov rax, 0x01        ; write syscall
+    mov rdi, 0x01        ; stdout
+    mov rsi, tape        ; buf
+    add rsi, r8
+    mov rdx, 0x01        ; a single char
+    syscall
+
+
+    mov rax, 0x01        ; write syscall
+    mov rdi, 0x01        ; stdout
+    mov rsi, tape        ; buf
+    add rsi, r8
+    mov rdx, 0x01        ; a single char
+    syscall
+
+    add byte [tape + r8], 3
+
+    mov rax, 0x01        ; write syscall
+    mov rdi, 0x01        ; stdout
+    mov rsi, tape        ; buf
+    add rsi, r8
+    mov rdx, 0x01        ; a single char
+    syscall
+
+    add r8, 1
+    add byte [tape + r8], 2
+
+    mov rax, 0x01        ; write syscall
+    mov rdi, 0x01        ; stdout
+    mov rsi, tape        ; buf
+    add rsi, r8
+    mov rdx, 0x01        ; a single char
+    syscall
+
+    add r8, -2
+    add byte [tape + r8], 15
+
+    mov rax, 0x01        ; write syscall
+    mov rdi, 0x01        ; stdout
+    mov rsi, tape        ; buf
+    add rsi, r8
+    mov rdx, 0x01        ; a single char
+    syscall
+
+    add r8, 1
+
+    mov rax, 0x01        ; write syscall
+    mov rdi, 0x01        ; stdout
+    mov rsi, tape        ; buf
+    add rsi, r8
+    mov rdx, 0x01        ; a single char
+    syscall
+
+    add byte [tape + r8], 3
+
+    mov rax, 0x01        ; write syscall
+    mov rdi, 0x01        ; stdout
+    mov rsi, tape        ; buf
+    add rsi, r8
+    mov rdx, 0x01        ; a single char
+    syscall
+
+    add byte [tape + r8], -6
+
+    mov rax, 0x01        ; write syscall
+    mov rdi, 0x01        ; stdout
+    mov rsi, tape        ; buf
+    add rsi, r8
+    mov rdx, 0x01        ; a single char
+    syscall
+
+    add byte [tape + r8], -8
+
+    mov rax, 0x01        ; write syscall
+    mov rdi, 0x01        ; stdout
+    mov rsi, tape        ; buf
+    add rsi, r8
+    mov rdx, 0x01        ; a single char
+    syscall
+
+    add r8, 1
+    add byte [tape + r8], 1
+
+    mov rax, 0x01        ; write syscall
+    mov rdi, 0x01        ; stdout
+    mov rsi, tape        ; buf
+    add rsi, r8
+    mov rdx, 0x01        ; a single char
+    syscall
+
+    add r8, 1
 
     mov rax, 0x01        ; write syscall
     mov rdi, 0x01        ; stdout
